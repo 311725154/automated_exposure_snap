@@ -10,7 +10,8 @@ def autosnap(rep):
     :return: void
     """
     # local variables declaration
-    wait_time = 0.5
+    wait_time = 0.1
+    local_dir_path = "C:/Users/admin/PycharmProjects/SpotSizeExposureTimeAuto/"
     # png recipe
     session_NITVision = [
         ["recording.png", "recording_1.png", "recording_2.png","recording_on.png"],
@@ -23,7 +24,10 @@ def autosnap(rep):
     # no actual scan required although the scan algorithm initially finds the recording tab
     while set_ < len(session_NITVision) and flag:
         for pic in session_NITVision[set_]:
-            cord = pyautogui.locateOnScreen(pic)
+            try:
+                cord = pyautogui.locateOnScreen(pic)
+            except OSError:
+                cord = pyautogui.locateOnScreen(local_dir_path+pic)
             if cord:
                 pyautogui.moveTo(cord)
                 # condition when snap button found

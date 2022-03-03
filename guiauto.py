@@ -1,9 +1,5 @@
-import pywinauto
+
 import pyautogui
-from subprocess import Popen
-from pywinauto import Desktop
-from pywinauto import application
-#import lackey
 import time
 
 class Robot:

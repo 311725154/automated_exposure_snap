@@ -2,6 +2,8 @@ import pyautogui
 import time
 import sys
 
+#sys.path.append(r'C:\Users\admin\PycharmProjects\SpotSizeExposureTimeAuto')
+
 
 def autoexposure(exposure_time, dest_folder, file_name, num):
     """
@@ -15,10 +17,9 @@ def autoexposure(exposure_time, dest_folder, file_name, num):
 
     # local internal variables declaration
     wait_time = 1
+    local_dir_path = "C:/Users/admin/PycharmProjects/SpotSizeExposureTimeAuto/"
     # png frame recipe
-    session_NITVision = [["exp_time_a.png", "ex_time_b.png", "ex_time_c.png", "ex_time_e.png",
-                          "exposure_time.png", "exposure_time_1.png", "exposure_time_2.png", "exposure_time_4.png",
-                          "exposure_time_5.png", "exposure_time_6.png"],
+    session_NITVision = [[ "exposure_time_4.png", "exposure_time_5.png", "exposure_time_6.png"],
                          ["play.png", "play_1.png", "play_2.png"],
                          ["recording.png", "recording_1.png", "recording_2.png"],
                          ["raw.png", "raw_1.png", "raw_2.png"],
@@ -35,7 +36,10 @@ def autoexposure(exposure_time, dest_folder, file_name, num):
         while set_ < len(session_NITVision):
             for pic in session_NITVision[set_]:
                 # attempts to find coordinates
-                cord = pyautogui.locateOnScreen(pic)
+                try:
+                    cord = pyautogui.locateOnScreen(pic)
+                except OSError:
+                    cord = pyautogui.locateOnScreen(local_dir_path+pic)
                 if cord:
                     if "raw" in pic or "tifff" in pic:
                         break
@@ -44,7 +48,7 @@ def autoexposure(exposure_time, dest_folder, file_name, num):
 
                     # special conditions that stands for special treatment
                     if "initial" in pic:
-                        pyautogui.move(0, 15)
+                        pyautogui.move(0, 20)
                         time.sleep(wait_time)
                         pyautogui.click()
                         pyautogui.hotkey('ctrl', 'a')
@@ -52,53 +56,71 @@ def autoexposure(exposure_time, dest_folder, file_name, num):
                         pyautogui.typewrite(str(num))
                         break
                     if "directory" in pic:
-                        pyautogui.move(0, 15)
-                        time.sleep(wait_time)
+                        pyautogui.move(0, 20)
                         pyautogui.click()
                         pyautogui.typewrite(str(dest_folder))
                         break
                     if "name" in pic:
-                        pyautogui.move(0, 15)
+                        pyautogui.move(0, 20)
                         time.sleep(wait_time)
                         pyautogui.click()
                         pyautogui.typewrite(str(file_name))
                         break
                     if "time" in pic:
-                        act_cord = pyautogui.locateOnScreen("real_fps.png")
-                        spacer = 0
-                        while act_cord:
-                            act_cord = pyautogui.locateOnScreen("real_fps.png")
-                            if act_cord:
-                                spacer += 1
-                                pyautogui.move(0, 2)
-                                time.sleep(wait_time)
-                                pyautogui.click()
-                                pyautogui.typewrite(str(exposure_time))
-
-                        mus_cord = pyautogui.locateOnScreen("mus.png")
-                        if mus_cord:
-                            pyautogui.moveTo(mus_cord)
-                        else:
-                            pyautogui.move(111, 0)
-                        time.sleep(wait_time)
+                        success = False
+                        pyautogui.move(0, 15)
+                        time.sleep(wait_time+1)
                         pyautogui.click()
                         time.sleep(wait_time)
-                        pyautogui.press('u')
-                        time.sleep(wait_time)
-                        pyautogui.press('enter')
-                        pyautogui.press('enter')
-                        break
+                        pyautogui.typewrite(str(exposure_time))
+
+                        idx = 0
+
+                        mus_png = [ "mus_1.png", "mus_2.png", "mus_4.png"]
+                        while idx < len(mus_png) and not success:
+                            try:
+                                mus_cord = pyautogui.locateOnScreen(mus_png[idx])
+                            except OSError:
+                                mus_cord = pyautogui.locateOnScreen(local_dir_path+mus_png[idx])
+                            if mus_cord:
+
+                                pyautogui.moveTo(mus_cord)
+                                pyautogui.click()
+                                time.sleep(wait_time)
+                                pyautogui.press('u')
+                                time.sleep(wait_time+2)
+                                pyautogui.press('enter')
+                                time.sleep(wait_time)
+                                pyautogui.press('enter')
+                                success = True
+
+                            else:
+                                success = True
+                                #print("cord exception")
+                                pyautogui.move(110, 12)
+                                time.sleep(wait_time)
+                                pyautogui.click()
+                                time.sleep(wait_time)
+                                pyautogui.press('u')
+                                time.sleep(wait_time)
+                                pyautogui.press('enter')
+
+                            idx += 1
+
                     else:
                         time.sleep(wait_time)
                         pyautogui.click()
-                        time.sleep(wait_time)
+                        pyautogui.press('enter')
                         break
+                    pyautogui.press('enter')
                 # condition when coordinates of exposure time label not found
                 if not cord and "time" in pic:
-                    print("cam_control acheved")
                     cam_control = ["camera_control_off.png", "camera_control_off_1.png", "camera_control_off_2.png"]
                     for atm in cam_control:
-                        cord_n = pyautogui.locateOnScreen(atm)
+                        try:
+                            cord_n = pyautogui.locateOnScreen(atm)
+                        except OSError:
+                            cord_n = pyautogui.locateOnScreen(local_dir_path+atm)
                         if cord_n:
                             pyautogui.moveTo(cord_n)
                             time.sleep(wait_time)
@@ -109,7 +131,8 @@ def autoexposure(exposure_time, dest_folder, file_name, num):
                     break
 
                 else:
-                    assert "image detection failure"
+                    #print("image detection failure")
+                    pass
 
             set_ += 1
 
@@ -120,4 +143,5 @@ if __name__ == "__main__":
     dest_folder = sys.argv[2]
     file_name = sys.argv[3]
     num = sys.argv[4]
+    #print("exposure_time={} dest_folder={} file_name={} num={}".format(str(exposure_time),dest_folder, file_name, str(num)))
     autoexposure(str(exposure_time), str(dest_folder), str(file_name), num)
