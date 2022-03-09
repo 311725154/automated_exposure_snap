@@ -35,7 +35,7 @@ def autosnap(rep):
                     # repeats clicks on snap
                     for count in range(repeat):
                         pyautogui.click()
-                        time.sleep(wait_time)
+                        #time.sleep(wait_time)
                 else:
                     pyautogui.click()
                 # snap execution triggered
